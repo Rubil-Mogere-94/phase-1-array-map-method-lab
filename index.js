@@ -12,28 +12,19 @@ const tutorials = [
 ];
 
 const titleCased = () => {
-  return tutorials.map(tutorial => {
-    // First handle specific technical terms that need exact capitalization
-    tutorial = tutorial
-      .replace('stopPropagation', 'StopPropagation')
-      .replace('preventDefault', 'PreventDefault')
-      .replace('JSONP', 'JSONP');
+  const specialTerms = ['OO', 'API', 'NaN', 'JSONP', 'StopPropagation', 'PreventDefault'];
 
-    // Then apply title case to each word
-    return tutorial.split(' ')
-      .map(word => {
-        // Preserve exact capitalization for special terms
-        const specialTerms = ['OO', 'API', 'JSONP', 'NaN', 'StopPropagation', 'PreventDefault'];
-        if (specialTerms.includes(word)) return word;
-        
-        // Handle words with punctuation (like '===?')
-        if (word.match(/[^a-zA-Z]/)) {
-          return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-        }
-        
-        // Standard title casing
-        return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-      })
-      .join(' ');
+  return tutorials.map(tutorial => {
+    return tutorial.split(' ').map(word => {
+      // Check for exact matches (like 'NaN' or 'API')
+      const normalized = word.replace(/[^a-zA-Z]/g, ''); // Remove punctuation for comparison
+      const punctuation = word.slice(normalized.length); // Save punctuation
+
+      const special = specialTerms.find(term => term.toLowerCase() === normalized.toLowerCase());
+      if (special) return special + punctuation;
+
+      // Capitalize first letter, lower the rest
+      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+    }).join(' ');
   });
 };
